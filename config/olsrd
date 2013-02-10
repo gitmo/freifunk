@@ -1,0 +1,29 @@
+
+config olsrd 'olsrd'
+	option IpVersion '4'
+
+config LoadPlugin 'olsrd_arprefresh'
+	option library 'olsrd_arprefresh.so.0.1'
+
+config LoadPlugin 'olsrd_nameservice'
+	option library 'olsrd_nameservice.so.0.3'
+	option latlon_file '/var/run/latlon.js'
+	option hosts_file '/var/etc/hosts.olsr'
+	option sighup_pid_file '/var/run/dnsmasq.pid'
+	option suffix '.olsr'
+
+config LoadPlugin 'olsrd_txtinfo'
+	option library 'olsrd_txtinfo.so.0.1'
+	option accept '0.0.0.0'
+
+config InterfaceDefaults 'InterfaceDefaults'
+	option Ip4Broadcast '255.255.255.255'
+
+config LoadPlugin 'olsrd_watchdog'
+	option library 'olsrd_watchdog.so.0.1'
+	option file '/var/run/olsrd.watchdog'
+	option interval '30'
+
+config Interface 'wireless0'
+	option interface 'wireless0'
+

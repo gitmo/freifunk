@@ -1,0 +1,8 @@
+
+config netconfig 'netconfig'
+	option radio0_config '1'
+	option radio0_channel '10'
+	option radio0_ip4addr '10.0.0.01'
+
+config general 'general'
+
