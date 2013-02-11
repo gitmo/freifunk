@@ -1,0 +1,41 @@
+
+config system
+	option hostname 'OpenWrt'
+	option timezone 'UTC'
+
+config timeserver 'ntp'
+	list server '0.openwrt.pool.ntp.org'
+	list server '1.openwrt.pool.ntp.org'
+	list server '2.openwrt.pool.ntp.org'
+	list server '3.openwrt.pool.ntp.org'
+	option enable_server '0'
+
+config led 'led_wifi'
+	option name 'wifi'
+	option sysfs 'soc:blue:wifi'
+	option trigger 'netdev'
+	option dev 'wlan0'
+	option mode 'link tx rx'
+
+config led 'led_usb'
+	option name 'USB'
+	option sysfs 'soc:blue:usb'
+	option trigger 'usbdev'
+	option dev '1-1'
+	option interval '50'
+
+config led 'led_fxs1'
+	option name 'fxs1'
+	option sysfs 'soc:blue:fxs1'
+	option default '1'
+
+config led 'led_fxs2'
+	option name 'fxs2'
+	option sysfs 'soc:blue:fxs2'
+	option default '1'
+
+config led 'led_online'
+	option name 'online'
+	option sysfs 'soc:blue:internet'
+	option default '1'
+
