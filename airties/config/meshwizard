@@ -1,7 +1,9 @@
-config 'netconfig' 'netconfig'
 
-config 'general' 'general'
-	option 'sharenet' '0'
-	option 'local_restrict' '1'
-	option 'cleanup' '1'
+config netconfig 'netconfig'
+	option radio0_config '1'
+	option radio0_channel 'xx'
+	option radio0_ip4addr '104.xxx.xxx.xxx'
+
+config general 'general'
+	option local_restrict '1'
 

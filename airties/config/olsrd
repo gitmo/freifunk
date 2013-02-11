@@ -1,26 +1,32 @@
-config olsrd
-	# uncomment the following line to use a custom config file instead:
-	#option config_file '/etc/olsrd.conf'
 
+config olsrd 'olsrd'
 	option IpVersion '4'
 
-config LoadPlugin
+config LoadPlugin 'olsrd_arprefresh'
 	option library 'olsrd_arprefresh.so.0.1'
+	option ignore '0'
 
-config LoadPlugin
-	option library 'olsrd_dyn_gw.so.0.5'
-
-config LoadPlugin
-	option library 'olsrd_httpinfo.so.0.1'
-	option port '1978'
-	list Net '0.0.0.0 0.0.0.0'
-
-config LoadPlugin
+config LoadPlugin 'olsrd_nameservice'
 	option library 'olsrd_nameservice.so.0.3'
+	option ignore '0'
+	option latlon_file '/var/run/latlon.js'
+	option hosts_file '/var/etc/hosts.olsr'
+	option sighup_pid_file '/var/run/dnsmasq.pid'
+	option suffix '.olsr'
 
-config LoadPlugin
+config LoadPlugin 'olsrd_txtinfo'
 	option library 'olsrd_txtinfo.so.0.1'
 	option accept '0.0.0.0'
+	option ignore '0'
 
-config Interface
-	list interface 'wlan'
+config InterfaceDefaults 'InterfaceDefaults'
+	option Ip4Broadcast '255.255.255.255'
+
+config LoadPlugin 'olsrd_watchdog'
+	option library 'olsrd_watchdog.so.0.1'
+	option file '/var/run/olsrd.watchdog'
+	option interval '30'
+
+config Interface 'wireless0'
+	option interface 'wireless0'
+

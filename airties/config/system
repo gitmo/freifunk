@@ -1,7 +1,11 @@
 
-config system
-	option hostname 'OpenWrt'
-	option timezone 'UTC'
+config system 'system'
+	option hostname 'MyHostname'
+	option location 'My Location'
+	option latitude '52.5'
+	option longitude '13.4'
+	option zonename 'Europe/Berlin'
+	option timezone 'CET-1CEST,M3.5.0,M10.5.0/3'
 
 config timeserver 'ntp'
 	list server '0.openwrt.pool.ntp.org'
