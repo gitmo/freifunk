@@ -79,7 +79,7 @@ json='{
 
 length=$(/bin/echo -n "$json" | wc -c | tr -d ' ')
 
-## Contruct PUT request for netcat
+## Construct PUT request for netcat
 
 request="PUT /$db/$hostname HTTP/1.1
 User-Agent: nc
