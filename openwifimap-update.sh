@@ -11,7 +11,7 @@ set -o nounset  # Exit if an uninitialized variable is used.
 #
 # Depends on olsrd-mod-nameservice and olsrd-mod-txtinfo.
 
-version=1.0
+version=1.1
 
 # Tell'em who we are.
 user_agent="openwifimap-update.sh/$version"
@@ -48,15 +48,18 @@ do
 ## Get revision id of the document for this node
 
 url="http://$maphost/$db/$hostname"
-_rev=$(wget -O - "$url" 2>/dev/null | tr \" \\n | grep _rev -A 2 | tail -1)
+rev=$(wget -O - "$url" 2>/dev/null | tr \" \\n | grep _rev -A 2 | tail -1)
 
 ## Construct new document
+
+# If this is a brand new entry leave out "_rev" field to create a new doc.
+[[ -n "$rev" ]] && revision='"_rev": "'$rev'",' || revision=""
 
 [[ -f "$extra_fields" ]] && extras=$(cat "$extra_fields") || extras=""
 
 json='{
   "_id": "'$hostname'",
-  "_rev": "'$_rev'",
+  '$revision'
   "type": "node",
   "hostname": "'$hostname'",
   "longitude": '$lon',
