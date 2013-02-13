@@ -1,4 +1,6 @@
 #!/bin/sh
+set -o errexit  # Exit on any statement returning non-true value.
+set -o nounset  # Exit if an uninitialized variable is used.
 
 # Update OpenWifiMap
 #
@@ -9,8 +11,11 @@
 #
 # Depends on olsrd-mod-nameservice and olsrd-mod-txtinfo.
 
-set -o errexit  # Exit on any statement returning non-true value.
-set -o nounset  # Exit if an uninitialized variable is used.
+version=1.0
+
+# Tell'em who we are.
+user_agent="openwifimap-update.sh/$version"
+home="https://github.com/gitmo/freifunk/blob/master/openwifimap-update.sh"
 
 # Set additional information in this file (start with a comma).
 extra_fields="/etc/openwifimap_extra.json"
@@ -34,7 +39,7 @@ ip=$1; lat=$2; lon=$3; defroute=$4; hostname=$5.olsr
 # For now, only the neighbor with the default route is supported.
 neighbor=$(awk /^$defroute/'{ print $2 }' < $hosts_file)
 
-# Query the txtinfo-plugin for link quality.
+# Query the txtinfo plugin for link quality.
 quality=$(echo "/links" | nc localhost 2006 | awk /^$ip/'{ print $NR }')
 
 for maphost in $maphosts
@@ -74,15 +79,16 @@ json='{
     "name": "'$(uci get freifunk.contact.nickname)'",
     "note": "'$(uci get freifunk.contact.note)'",
     "mail": "'$(uci get freifunk.contact.mail)'"
-  }'$extras'
+  }'$extras',
+  "script": "'$home'"
 }'
 
 length=$(/bin/echo -n "$json" | wc -c | tr -d ' ')
 
-## Contruct PUT request for netcat
+## Construct PUT request for netcat
 
 request="PUT /$db/$hostname HTTP/1.1
-User-Agent: nc
+User-Agent: $user_agent
 Host: $maphost
 Content-Type: application/json
 Content-Length: $length
