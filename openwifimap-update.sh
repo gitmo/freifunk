@@ -78,10 +78,12 @@ json='{
     }
   ],
   "ipv4defaultGateway": "'$defroute'",
-  "contact": {
-    "name": "'$(uci get freifunk.contact.nickname)'",
-    "note": "'$(uci get freifunk.contact.note)'",
-    "mail": "'$(uci get freifunk.contact.mail)'"
+  "freifunk:": {
+     "contact": {
+       "name": "'$(uci get freifunk.contact.nickname)'",
+       "note": "'$(uci get freifunk.contact.note)'",
+       "mail": "'$(uci get freifunk.contact.mail)'"
+     }
   }'$extras',
   "script": "'$home'"
 }'
