@@ -57,6 +57,9 @@ rev=$(wget -O - "$url" 2>/dev/null | tr \" \\n | grep _rev -A 2 | tail -1)
 
 [[ -f "$extra_fields" ]] && extras=$(cat "$extra_fields") || extras=""
 
+# timestamp of last update in UTC
+lastupdate=$(date -u -Iseconds)
+
 json='{
   "_id": "'$hostname'",
   '$revision'
@@ -64,6 +67,7 @@ json='{
   "hostname": "'$hostname'",
   "longitude": '$lon',
   "latitude": '$lat',
+  "lastupdate": "'${lastupdate/UTC/Z}'",
   "interfaces": [
     {
       "name": "'$hostname'",
