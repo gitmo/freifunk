@@ -11,7 +11,7 @@ set -o nounset  # Exit if an uninitialized variable is used.
 #
 # Depends on olsrd-mod-nameservice and olsrd-mod-txtinfo.
 
-version=1.1
+version=2.0
 
 # Tell'em who we are.
 user_agent="openwifimap-update.sh/$version"
@@ -21,8 +21,7 @@ home="https://github.com/gitmo/freifunk/blob/master/openwifimap-update.sh"
 extra_fields="/etc/openwifimap_extra.json"
 
 # Map services running OpenWifiMap
-maphosts="openwifimap.net map.pberg.freifunk.net"
-db="openwifimap"
+maphosts="api.openwifimap.net couch.pberg.freifunk.net/test/_design/owm-api/_rewrite"
 
 # These files are updated by the olsr nameservice plugin.
 latlon_file=$(uci get olsrd.olsrd_nameservice.latlon_file)
@@ -45,29 +44,16 @@ quality=$(echo "/links" | nc localhost 2006 | awk /^$ip/'{ print $NR }')
 for maphost in $maphosts
 do
 
-## Get revision id of the document for this node
-
-url="http://$maphost/$db/$hostname"
-rev=$(wget -O - "$url" 2>/dev/null | tr \" \\n | grep _rev -A 2 | tail -1)
-
 ## Construct new document
-
-# If this is a brand new entry leave out "_rev" field to create a new doc.
-[[ -n "$rev" ]] && revision='"_rev": "'$rev'",' || revision=""
 
 [[ -f "$extra_fields" ]] && extras=$(cat "$extra_fields") || extras=""
 
-# timestamp of last update in UTC
-lastupdate=$(date -u -Iseconds)
-
 json='{
-  "_id": "'$hostname'",
-  '$revision'
   "type": "node",
   "hostname": "'$hostname'",
   "longitude": '$lon',
   "latitude": '$lat',
-  "lastupdate": "'${lastupdate/UTC/Z}'",
+  "updateInterval": 3600,
   "interfaces": [
     {
       "name": "'$hostname'",
@@ -96,16 +82,24 @@ length=$(/bin/echo -n "$json" | wc -c | tr -d ' ')
 
 ## Construct PUT request for netcat
 
-request="PUT /$db/$hostname HTTP/1.1
-User-Agent: $user_agent
-Host: $maphost
-Content-Type: application/json
-Content-Length: $length
+# Split API URLs in host and resource parts at the first slash character
+maphost="$maphost/"
+host=${maphost%%/*}
+base=${maphost#*/}
 
+# HTTP header + data
+request="\
+PUT /$base/update_node/$hostname HTTP/1.1\r
+User-Agent: $user_agent\r
+Host: $host\r
+Content-Length: $length\r
+Content-Type: application/json\r
+\r
 $json"
 
 ## Update document in couchdb
+
 # real netcat (not busybox) might need a delay: -i 1
-/bin/echo -n "$request" | nc $maphost 80
+/bin/echo -ne "$request" | nc $host 80
 
 done
